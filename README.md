@@ -14,7 +14,7 @@ mvn clean package
 ## Deploy 
 Push broker binary code to cloud foundry (use cf client).:
 ```
-cf push zookeeper-broker -p targer/zook-broker-*.jar -m 512M -i 1 --no-start
+cf push zookeeper-broker -p target/zookeeper-broker-*.jar -m 512M -i 1 --no-start
 ```
 
 ## Configure
@@ -31,7 +31,7 @@ Broker configuration params list (environment properties):
   * BASE_GUID - base id for catalog plan creation (uuid)
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: zookeeper)
   * CF_CATALOG_SERVICEID - service id in cloud foundry catalog (default: zookeeper)
-  * ZK_BRK_SPACE - (default: /zkbrk_space)
+  * ZK_BRK_STORE - (default: /zkbrk_store)
   * ZK_BRK_ROOT - (default: /platform)
 
 For instance.:
