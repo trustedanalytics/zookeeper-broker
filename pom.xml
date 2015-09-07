@@ -65,6 +65,9 @@
                     <includes>
                         <include>src/**/*.java</include>
                     </includes>
+                    <excludes>
+                        <exclude>src/main/java/org/trustedanalytics/servicebroker/zk/config/BrokerConfig.java</exclude>
+                    </excludes>
                     <mapping>
                         <java>JAVADOC_STYLE</java>
                         <sh>SCRIPT_STYLE</sh>
