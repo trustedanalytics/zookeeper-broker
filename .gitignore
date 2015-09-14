@@ -27,3 +27,6 @@ hs_err_pid*
 # intellij configuration files
 .idea/
 *.iml
+
+# files created during build for Cloud Foundry app
+manifest.yml
