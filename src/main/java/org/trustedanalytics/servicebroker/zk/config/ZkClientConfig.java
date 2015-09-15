@@ -17,6 +17,9 @@ package org.trustedanalytics.servicebroker.zk.config;
 
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
+import org.trustedanalytics.hadoop.config.ConfigurationHelper;
+import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
+import org.trustedanalytics.hadoop.config.PropertyLocator;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManager;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManagerFactory;
 
@@ -37,6 +40,8 @@ public class ZkClientConfig {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(ZkClientConfig.class);
 
+  private ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
+
   @Autowired
   private ExternalConfiguration conf;
 
@@ -46,9 +51,9 @@ public class ZkClientConfig {
     krbAut();
     ZookeeperClient zkClient =
         new ZookeeperClientBuilder(conf.getZkClusterHosts(),
-                                   conf.getZkBrokerUserName(),
-                                   conf.getZkBrokerUserPass(),
-                                   conf.getBrokerRootNode()).build();
+                                        getPropertyFromCredentials(PropertyLocator.USER),
+                                        getPropertyFromCredentials(PropertyLocator.PASSWORD),
+                                        conf.getBrokerRootNode()).build();
     return zkClient;
   }
 
@@ -58,22 +63,32 @@ public class ZkClientConfig {
   public ZookeeperClient getZkClientForBrokerStore() throws IOException, LoginException {
     krbAut();
     ZookeeperClient zkClient = new ZookeeperClientBuilder(conf.getZkClusterHosts(),
-                                                   conf.getZkBrokerUserName(),
-                                                   conf.getZkBrokerUserPass(),
-                                                   conf.getBrokerStoreNode()).build();
+                                                    getPropertyFromCredentials(PropertyLocator.USER),
+                                                    getPropertyFromCredentials(PropertyLocator.PASSWORD),
+                                                    conf.getBrokerStoreNode()).build();
     return zkClient;
   }
 
-  private void krbAut() throws LoginException {
-    if (conf.getKerberosKdc().isEmpty()
-        || conf.getKerberosRealm().isEmpty()) {
-      return;
+  private void krbAut() throws LoginException, IOException {
+    try{
+        KrbLoginManager loginManager =
+            KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
+                    getPropertyFromCredentials(PropertyLocator.KRB_KDC),
+                    getPropertyFromCredentials(PropertyLocator.KRB_REALM));
+
+        LOGGER.info("Trying to authenticate");
+        loginManager.loginWithCredentials(
+                getPropertyFromCredentials(PropertyLocator.USER),
+                getPropertyFromCredentials(PropertyLocator.PASSWORD).toCharArray());
     }
-    LOGGER.info("Trying to authenticate");
-    KrbLoginManager loginManager =
-        KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
-            conf.getKerberosKdc(),
-            conf.getKerberosRealm());
-    loginManager.loginWithCredentials(conf.getZkBrokerUserName(), conf.getZkBrokerUserPass().toCharArray());
+    catch(IllegalStateException e){
+        return;
+    }
+  }
+
+
+  private String getPropertyFromCredentials(PropertyLocator property) throws IOException{
+    return confHelper.getPropertyFromEnv(property)
+        .orElseThrow(() -> new IllegalStateException(property.name() + " not found in VCAP_SERVICES"));
   }
 }

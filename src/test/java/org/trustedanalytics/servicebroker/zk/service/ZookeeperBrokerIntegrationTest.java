@@ -67,7 +67,7 @@ public class ZookeeperBrokerIntegrationTest {
   }
 
   @Test
-  public void testCreateInstanceBinding_success_shouldReturnHBaseNamespaceNameInCredentials() throws Exception {
+  public void testCreateInstanceBinding_success_shouldReturnZookeeperNodeInCredentials() throws Exception {
     CreateServiceInstanceBindingRequest request = new CreateServiceInstanceBindingRequest(
         getServiceInstance("serviceId").getServiceDefinitionId(), "planId", "appGuid").
         withBindingId("bindingId").withServiceInstanceId("serviceId");

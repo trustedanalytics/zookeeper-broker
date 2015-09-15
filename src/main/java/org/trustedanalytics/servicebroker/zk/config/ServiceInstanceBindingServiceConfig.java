@@ -19,6 +19,9 @@ import com.google.common.collect.ImmutableMap;
 
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceBindingServiceStore;
+import org.trustedanalytics.hadoop.config.ConfigurationHelper;
+import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
+import org.trustedanalytics.hadoop.config.PropertyLocator;
 import org.trustedanalytics.servicebroker.zk.service.ZKServiceInstanceBindingService;
 
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
@@ -52,9 +55,15 @@ public class ServiceInstanceBindingServiceConfig {
     }
 
     private Map<String, Object> getCredentials() throws IOException {
+        ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
+
         return ImmutableMap.of(
-                "kerberos", ImmutableMap.of("kdc", configuration.getKerberosKdc(),
-                "krealm", configuration.getKerberosRealm())
+                "kerberos", ImmutableMap.of(
+                        "kdc", confHelper.getPropertyFromEnv(PropertyLocator.KRB_KDC)
+                                .orElse(""),
+                        "krealm", confHelper.getPropertyFromEnv(PropertyLocator.KRB_REALM)
+                                .orElse(""))
         );
     }
+
 }

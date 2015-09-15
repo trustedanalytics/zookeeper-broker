@@ -17,6 +17,9 @@ Push broker binary code to cloud foundry (use cf client).:
 cf push zookeeper-broker -p target/zookeeper-broker-*.jar -m 512M -i 1 --no-start
 ```
 
+## Kerberos configuration
+Broker should be bind to existing kerberos provided service. This will provide default kerberos configuration, for REALM and KDC host.
+
 ## Configure
 For strict separation of config from code (twelve-factor principle), configuration must be placed in environment variables.
  
@@ -24,9 +27,6 @@ Broker configuration params list (environment properties):
 * obligatory
   * USER_PASSWORD - password to interact with service broker
   * ZK_CLUSTER_URL - comma separated ip addresses of zookeeper nodes (i.e.: 10.10.9.145:2181,10.10.9.146:2181)
-* obligatory only when zookeeper requires kerberos authentication:
-  * KRB_KDC_HOST - kerberos kdc host address
-  * KRB_REALM - kerberos realm name
 * optional :
   * BASE_GUID - base id for catalog plan creation (uuid)
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: zookeeper)
@@ -39,11 +39,6 @@ For instance.:
 cf se zookeeper-broker ZK_CLUSTER_URL 10.10.9.145:2181,10.10.9.146:2181
 ```
 
-When zookeeper requires kerberos authentication set:
-```
-cf se zookeeper-broker KRB_KDC_HOST ip-10-10-9-198.us-west-2.compute.internal
-cf se zookeeper-broker KRB_REALM US-WEST-2.COMPUTE.INTERNAL
-```
 ## Start  service broker application
 
 Use cf client :

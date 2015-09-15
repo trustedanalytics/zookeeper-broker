@@ -34,6 +34,10 @@ import java.io.IOException;
 @Profile("test")
 public class ConfigurationTest {
 
+  private final String USER = "cf";
+
+  private final String PASSWORD = "cf1";
+
   @Autowired
   private ExternalConfiguration conf;
 
@@ -45,8 +49,8 @@ public class ConfigurationTest {
     //Preparing broker store space. It has to be done by provisioning mechanism.
     ZookeeperUtils.ZookeeperCredentials credendials =
         new ZookeeperUtils.ZookeeperCredentials(zkServer.getConnectString(),
-                                                    conf.getZkBrokerUserName(),
-                                                    conf.getZkBrokerUserPass());
+                                                    USER,
+                                                    PASSWORD);
 
     ZookeeperUtils.createDir(credendials, conf.getBrokerStoreNode());
     ZookeeperUtils.createDir(credendials, conf.getBrokerRootNode());
@@ -59,8 +63,8 @@ public class ConfigurationTest {
   public ZookeeperClient getZkClientForBrokerStore(TestingServer zkServer) throws IOException {
     ZookeeperClient client =
         new ZookeeperClientBuilder(zkServer.getConnectString(),
-                                   conf.getZkBrokerUserName(),
-                                   conf.getZkBrokerUserPass(),
+                                   USER,
+                                   PASSWORD,
                                    conf.getBrokerStoreNode()).build();
     return client;
   }
@@ -70,8 +74,8 @@ public class ConfigurationTest {
   public ZookeeperClient getZkClientForBrokerInstance(TestingServer zkServer) throws IOException {
     ZookeeperClient client =
         new ZookeeperClientBuilder(zkServer.getConnectString(),
-                                   conf.getZkBrokerUserName(),
-                                   conf.getZkBrokerUserPass(),
+                                   USER,
+                                   PASSWORD,
                                    conf.getBrokerRootNode()).build();
     return client;
   }

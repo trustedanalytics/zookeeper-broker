@@ -7,8 +7,6 @@ broker.root:
   node: /platform
 zk:
   cluster:
-  brokerusername: cf
-  brokeruserpass: cf1
 cf:
   #name of service in cloud foundry catalog
   servicename: zookeeper
@@ -16,8 +14,5 @@ cf:
   serviceid: zookeeper
   #id of base plan in cloud foundry catalog
   baseId: ${BASE_GUID:}
-kerberos:
-  kdc: ${krb.kdc.host:}
-  realm: ${krb.realm:}
 metadata:
   imageUrl: ${IMAGE_URL:}
