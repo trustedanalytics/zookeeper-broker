@@ -15,4 +15,4 @@ applications:
     USER_PASSWORD: placeholder
     ZK_CLUSTER_URL: placeholder
     ZK_BRK_ROOT: placeholder
-    ZK_BRK_SPACE: placeholder
+    ZK_BRK_STORE: placeholder
