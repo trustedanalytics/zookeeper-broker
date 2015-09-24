@@ -16,3 +16,5 @@ cf:
   baseId: ${BASE_GUID:}
 metadata:
   imageUrl: ${IMAGE_URL:}
+
+logging.level.org.trustedanalytics: INFO

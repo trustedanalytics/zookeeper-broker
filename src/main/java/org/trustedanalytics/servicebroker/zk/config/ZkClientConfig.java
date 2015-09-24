@@ -15,14 +15,6 @@
  */
 package org.trustedanalytics.servicebroker.zk.config;
 
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
-import org.trustedanalytics.hadoop.config.ConfigurationHelper;
-import org.trustedanalytics.hadoop.config.ConfigurationHelperImpl;
-import org.trustedanalytics.hadoop.config.PropertyLocator;
-import org.trustedanalytics.hadoop.kerberos.KrbLoginManager;
-import org.trustedanalytics.hadoop.kerberos.KrbLoginManagerFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,65 +22,63 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-
-import java.io.IOException;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
+import org.trustedanalytics.hadoop.kerberos.KrbLoginManager;
+import org.trustedanalytics.hadoop.kerberos.KrbLoginManagerFactory;
+import org.trustedanalytics.servicebroker.zk.kerberos.KerberosProperties;
 
 import javax.security.auth.login.LoginException;
+import java.io.IOException;
 
 @Configuration
 public class ZkClientConfig {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(ZkClientConfig.class);
+    private final static Logger LOGGER = LoggerFactory.getLogger(ZkClientConfig.class);
 
-  private ConfigurationHelper confHelper = ConfigurationHelperImpl.getInstance();
+    @Autowired
+    private ExternalConfiguration conf;
 
-  @Autowired
-  private ExternalConfiguration conf;
-
-  @Bean(initMethod = "init", destroyMethod = "destroy")
-  @Qualifier(Qualifiers.BROKER_INSTANCE)
-  public ZookeeperClient getZkClientForBrokerInstance() throws IOException, LoginException {
-    krbAut();
-    ZookeeperClient zkClient =
-        new ZookeeperClientBuilder(conf.getZkClusterHosts(),
-                                        getPropertyFromCredentials(PropertyLocator.USER),
-                                        getPropertyFromCredentials(PropertyLocator.PASSWORD),
-                                        conf.getBrokerRootNode()).build();
-    return zkClient;
-  }
-
-  @Bean(initMethod = "init", destroyMethod = "destroy")
-  @Profile("cloud")
-  @Qualifier(Qualifiers.BROKER_STORE)
-  public ZookeeperClient getZkClientForBrokerStore() throws IOException, LoginException {
-    krbAut();
-    ZookeeperClient zkClient = new ZookeeperClientBuilder(conf.getZkClusterHosts(),
-                                                    getPropertyFromCredentials(PropertyLocator.USER),
-                                                    getPropertyFromCredentials(PropertyLocator.PASSWORD),
-                                                    conf.getBrokerStoreNode()).build();
-    return zkClient;
-  }
-
-  private void krbAut() throws LoginException, IOException {
-    try{
-        KrbLoginManager loginManager =
-            KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
-                    getPropertyFromCredentials(PropertyLocator.KRB_KDC),
-                    getPropertyFromCredentials(PropertyLocator.KRB_REALM));
-
-        LOGGER.info("Trying to authenticate");
-        loginManager.loginWithCredentials(
-                getPropertyFromCredentials(PropertyLocator.USER),
-                getPropertyFromCredentials(PropertyLocator.PASSWORD).toCharArray());
+    @Bean(initMethod = "init", destroyMethod = "destroy")
+    @Qualifier(Qualifiers.BROKER_INSTANCE)
+    public ZookeeperClient getZkClientForBrokerInstance(KerberosProperties kerberosProperties)
+        throws IOException, LoginException {
+        return getZookeeperClient(conf.getBrokerRootNode(), kerberosProperties);
     }
-    catch(IllegalStateException e){
-        return;
+
+    @Bean(initMethod = "init", destroyMethod = "destroy")
+    @Profile("cloud")
+    @Qualifier(Qualifiers.BROKER_STORE)
+    public ZookeeperClient getZkClientForBrokerStore(KerberosProperties kerberosProperties)
+        throws IOException, LoginException {
+        return getZookeeperClient(conf.getBrokerStoreNode(), kerberosProperties);
     }
-  }
 
+    private ZookeeperClient getZookeeperClient(String brokerNode, KerberosProperties krbProperties)
+        throws IOException, LoginException {
 
-  private String getPropertyFromCredentials(PropertyLocator property) throws IOException{
-    return confHelper.getPropertyFromEnv(property)
-        .orElseThrow(() -> new IllegalStateException(property.name() + " not found in VCAP_SERVICES"));
-  }
+        String user = "", password = "";
+
+        if (krbProperties.isValid()) {
+            LOGGER.info("Found kerberos configuration - trying to authenticate");
+            krbAuthenticate(krbProperties);
+            user = krbProperties.getUser();
+            password = krbProperties.getPassword();
+        } else {
+            LOGGER.warn("Kerberos configuration empty or invalid - will not try to authenticate.");
+        }
+
+        return new ZookeeperClientBuilder(conf.getZkClusterHosts(), user, password, brokerNode)
+            .build();
+    }
+
+    private void krbAuthenticate(KerberosProperties krbProperties)
+        throws LoginException, IOException {
+
+        KrbLoginManager loginManager = KrbLoginManagerFactory.getInstance()
+            .getKrbLoginManagerInstance(krbProperties.getKdc(), krbProperties.getRealm());
+        loginManager
+            .loginWithCredentials(krbProperties.getUser(),
+                krbProperties.getPassword().toCharArray());
+    }
 }

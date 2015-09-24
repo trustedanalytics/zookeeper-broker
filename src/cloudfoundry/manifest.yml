@@ -16,3 +16,5 @@ applications:
     ZK_CLUSTER_URL: placeholder
     ZK_BRK_ROOT: placeholder
     ZK_BRK_STORE: placeholder
+
+    VERSION: ${version}
