@@ -89,7 +89,7 @@ and look for :
       "kdc": "ip-10-10-9-198.us-west-2.compute.internal",
       "krealm": "US-WEST-2.COMPUTE.INTERNAL"
      },
-     "zk.cluster": "10.10.9.145:2181,10.10.9.146:2181",
+     "zk.cluster": "host-1.domain:2181,host-2.domain:2181",
      "zk.node": "/platform/e59a67b8-bcad-403e-a2a9-6bde5285f05e"
     },
     "label": "zookeeper",
