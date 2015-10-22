@@ -36,7 +36,7 @@ For strict separation of config from code (twelve-factor principle), configurati
 Broker configuration params list (environment properties):
 * obligatory
   * USER_PASSWORD - password to interact with service broker
-  * ZK_CLUSTER_URL - comma separated ip addresses of zookeeper nodes (i.e.: 10.10.9.145:2181,10.10.9.146:2181)
+  * ZK_CLUSTER_URL - comma separated ip addresses of zookeeper nodes (in case of Kerberos, domain names should be used) for instance : host-1.domain:2181,host-2.domain:2181
 * optional :
   * BASE_GUID - base id for catalog plan creation (uuid)
   * CF_CATALOG_SERVICENAME - service name in cloud foundry catalog (default: zookeeper)
@@ -46,7 +46,7 @@ Broker configuration params list (environment properties):
 
 For instance.:
 ```
-cf se zookeeper-broker ZK_CLUSTER_URL 10.10.9.145:2181,10.10.9.146:2181
+cf se zookeeper-broker ZK_CLUSTER_URL host-1.domain:2181,host-2.domain:2181
 ```
 
 ## Start  service broker application
