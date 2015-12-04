@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>zookeeper-broker</artifactId>
 
-    <version>0.5.6</version>
+    <version>0.5.7</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
@@ -12,8 +12,8 @@
     </parent>
 
     <properties>
-        <brokerVersion>2.4.2</brokerVersion>
-        <brokerTestVersion>2.4.1</brokerTestVersion>
+        <brokerVersion>2.6.0</brokerVersion>
+        <brokerTestVersion>2.6.0</brokerTestVersion>
         <start-class>org.trustedanalytics.servicebroker.zk.config.Application</start-class>
         <jacoco-measurement-instructions>0.7168</jacoco-measurement-instructions>
         <jacoco-measurement-branches>0.0000</jacoco-measurement-branches>
@@ -138,12 +138,12 @@
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>broker-store-commons</artifactId>
-            <version>0.4.4</version>
+            <version>0.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.trustedanalytics.servicebroker.repository</groupId>
             <artifactId>zookeeper-broker-store</artifactId>
-            <version>0.4.4</version>
+            <version>0.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
