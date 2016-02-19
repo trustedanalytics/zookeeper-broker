@@ -16,10 +16,10 @@
         <brokerVersion>2.6.0</brokerVersion>
         <brokerTestVersion>2.6.0</brokerTestVersion>
         <start-class>org.trustedanalytics.servicebroker.zk.config.Application</start-class>
-        <jacoco-measurement-instructions>0.7168</jacoco-measurement-instructions>
+        <jacoco-measurement-instructions>0.6719</jacoco-measurement-instructions>
         <jacoco-measurement-branches>0.0000</jacoco-measurement-branches>
-        <jacoco-measurement-lines>0.6983</jacoco-measurement-lines>
-        <jacoco-measurement-classes>0.9375</jacoco-measurement-classes>
+        <jacoco-measurement-lines>0.6686</jacoco-measurement-lines>
+        <jacoco-measurement-classes>0.8333</jacoco-measurement-classes>
     </properties>
 
     <build>
