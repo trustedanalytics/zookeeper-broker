@@ -13,11 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.config;
+package org.trustedanalytics.servicebroker.zk.service.integration.config.kerberos;
 
-public final class Qualifiers {
-  public final static String SERVICE_INSTANCE = "serviceInstance";
-  public final static String SERVICE_INSTANCE_BINDING = "serviceInstanceBinding";
-  public final static String BROKER_STORE = "brokerStore";
-  public final static String BROKER_INSTANCE = "brokerInstance";
+import java.io.IOException;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.trustedanalytics.servicebroker.zk.config.kerberos.KerberosProperties;
+
+@Configuration
+public class KerberosLocalConfiguration {
+
+  @Bean
+  @Profile("integration-test")
+  public KerberosProperties getKerberosProperties() throws IOException {
+    return new KerberosProperties("kdc", "realm", "test", "test");
+  }
 }

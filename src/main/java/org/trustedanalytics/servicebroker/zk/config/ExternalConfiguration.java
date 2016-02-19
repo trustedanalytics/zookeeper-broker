@@ -39,7 +39,7 @@ public class ExternalConfiguration {
   @NotNull
   private String cfServiceName;
 
-  @Value("${broker.store.node}")
+  @Value("${store.path}")
   @NotNull
   private String brokerStoreNode;
 

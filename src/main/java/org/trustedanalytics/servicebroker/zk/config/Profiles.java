@@ -15,9 +15,6 @@
  */
 package org.trustedanalytics.servicebroker.zk.config;
 
-public final class Qualifiers {
-  public final static String SERVICE_INSTANCE = "serviceInstance";
-  public final static String SERVICE_INSTANCE_BINDING = "serviceInstanceBinding";
-  public final static String BROKER_STORE = "brokerStore";
-  public final static String BROKER_INSTANCE = "brokerInstance";
+public final class Profiles {
+  public static final String CLOUD = "cloud";
 }

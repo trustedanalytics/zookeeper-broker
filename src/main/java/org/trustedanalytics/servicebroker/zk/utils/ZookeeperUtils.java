@@ -1,4 +1,4 @@
-  /**
+/**
  * Copyright (c) 2015 Intel Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,93 +15,89 @@
  */
 package org.trustedanalytics.servicebroker.zk.utils;
 
-import com.google.common.collect.ImmutableList;
+import java.security.MessageDigest;
 
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.RetryOneTime;
+import org.apache.directory.api.util.Base64;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.data.ACL;
 import org.apache.zookeeper.data.Id;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.codec.Base64;
 
-import java.security.MessageDigest;
+import com.google.common.collect.ImmutableList;
 
 public class ZookeeperUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperCredentials.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperCredentials.class);
 
-    private ZookeeperUtils() {
-    }
+  private ZookeeperUtils() {}
 
-    private static CuratorFramework getNewTempClient(String connectionString) {
-        CuratorFramework tempClient = CuratorFrameworkFactory.builder()
-            .connectString(connectionString)
-            .retryPolicy(new RetryOneTime(100))
-            .build();
-        tempClient.start();
-        return tempClient;
-    }
+  private static CuratorFramework getNewTempClient(String connectionString) {
+    CuratorFramework tempClient =
+        CuratorFrameworkFactory.builder().connectString(connectionString)
+            .retryPolicy(new RetryOneTime(100)).build();
+    tempClient.start();
+    return tempClient;
+  }
 
-    private static CuratorFramework getNewTempClient(ZookeeperCredentials credentials) {
-
-        CuratorFramework tempClient = CuratorFrameworkFactory.builder()
+  private static CuratorFramework getNewTempClient(ZookeeperCredentials credentials) {
+    CuratorFramework tempClient =
+        CuratorFrameworkFactory
+            .builder()
             .connectString(credentials.getConnectionString())
             .retryPolicy(new RetryOneTime(100))
-            .authorization("digest",
+            .authorization(
+                "digest",
                 String.format("%s:%s", credentials.getUsername(), credentials.getPassword())
-                    .getBytes())
-            .build();
-        tempClient.start();
-        return tempClient;
+                    .getBytes()).build();
+    tempClient.start();
+    return tempClient;
+  }
+
+  public static void createDir(ZookeeperCredentials credentials, String path) throws Exception {
+    LOGGER.info("Attempt to create znode: " + path);
+
+    CuratorFramework tempClient = getNewTempClient(credentials.getConnectionString());
+
+    MessageDigest md = MessageDigest.getInstance("SHA-1");
+    byte[] authDigest =
+        md.digest(String.format("%s:%s", credentials.getUsername(), credentials.getPassword())
+            .getBytes());
+    String authEncoded = new String(Base64.encode(authDigest));
+    ImmutableList<ACL> acl =
+        ImmutableList.of(new ACL(ZooDefs.Perms.ALL, new Id("digest", String.format("%s:%s",
+            credentials.getUsername(), authEncoded))));
+
+    tempClient.create().creatingParentsIfNeeded()
+        .forPath(path);
+
+    tempClient.close();
+  }
+
+  public static class ZookeeperCredentials {
+    private String connectionString;
+    private String username;
+    private String password;
+
+    public ZookeeperCredentials(String connectionString, String username, String password) {
+      this.connectionString = connectionString;
+      this.username = username;
+      this.password = password;
     }
 
-    public static void createDir(ZookeeperCredentials credentials, String path) throws Exception {
-
-        LOGGER.info("Attempt to create znode: " + path);
-
-        CuratorFramework tempClient = getNewTempClient(credentials.getConnectionString());
-
-        MessageDigest md = MessageDigest.getInstance("SHA-1");
-        byte[] authDigest = md.digest(
-            String.format("%s:%s", credentials.getUsername(), credentials.getPassword())
-                .getBytes());
-        String authEncoded = new String(Base64.encode(authDigest));
-        ImmutableList<ACL> acl = ImmutableList.of(new ACL(
-            ZooDefs.Perms.ALL,
-            new Id("digest", String.format("%s:%s", credentials.getUsername(), authEncoded))));
-
-        tempClient.create()
-            .creatingParentsIfNeeded()
-            //.withACL(acl)
-            .forPath(path);
-
-        tempClient.close();
+    public String getConnectionString() {
+      return connectionString;
     }
 
-    public static class ZookeeperCredentials {
-        private String connectionString;
-        private String username;
-        private String password;
-
-        public ZookeeperCredentials(String connectionString, String username, String password) {
-            this.connectionString = connectionString;
-            this.username = username;
-            this.password = password;
-        }
-
-        public String getConnectionString() {
-            return connectionString;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
+    public String getUsername() {
+      return username;
     }
+
+    public String getPassword() {
+      return password;
+    }
+  }
 }

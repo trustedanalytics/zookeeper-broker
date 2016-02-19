@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.config;
+package org.trustedanalytics.servicebroker.zk.config.store;
 
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.serialization.RepositoryDeserializer;
@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.trustedanalytics.servicebroker.zk.config.ExternalConfiguration;
+import org.trustedanalytics.servicebroker.zk.config.Qualifiers;
 
 import java.io.IOException;
 
@@ -36,6 +38,10 @@ public class BrokerStoreConfig {
 
   @Autowired
   private ExternalConfiguration config;
+
+  @Autowired
+  @Qualifier(Qualifiers.BROKER_STORE)
+  private ZookeeperClient zkClient;
 
   @Autowired
   @Qualifier(Qualifiers.SERVICE_INSTANCE)
@@ -55,8 +61,7 @@ public class BrokerStoreConfig {
 
   @Bean
   @Qualifier(Qualifiers.SERVICE_INSTANCE)
-  public BrokerStore<ServiceInstance> getServiceInstanceStore(
-      @Qualifier(value = Qualifiers.BROKER_STORE) ZookeeperClient zkClient) throws IOException {
+  public BrokerStore<ServiceInstance> getServiceInstanceStore() throws IOException {
     BrokerStore<ServiceInstance> brokerStore =
         new ZookeeperStore<>(zkClient, instanceSerializer, instanceDeserializer);
     return brokerStore;
@@ -64,11 +69,9 @@ public class BrokerStoreConfig {
 
   @Bean
   @Qualifier(Qualifiers.SERVICE_INSTANCE_BINDING)
-  public BrokerStore<CreateServiceInstanceBindingRequest> getServiceInstanceBindingStore(
-      @Qualifier(value = Qualifiers.BROKER_STORE) ZookeeperClient zkClient) throws IOException {
+  public BrokerStore<CreateServiceInstanceBindingRequest> getServiceInstanceBindingStore() throws IOException {
     BrokerStore<CreateServiceInstanceBindingRequest> brokerStore =
         new ZookeeperStore<>(zkClient, bindingSerializer, bindingDeserializer);
     return brokerStore;
   }
-
 }

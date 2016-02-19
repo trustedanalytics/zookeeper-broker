@@ -15,36 +15,41 @@
  */
 package org.trustedanalytics.servicebroker.zk.config;
 
-import org.trustedanalytics.cfbroker.store.api.BrokerStore;
-import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceServiceStore;
-import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
-import org.trustedanalytics.servicebroker.zk.service.ZKServiceInstanceService;
+import java.io.IOException;
 
+import javax.security.auth.login.LoginException;
+
+import org.cloudfoundry.community.servicebroker.model.Catalog;
+import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.io.IOException;
-
-import javax.security.auth.login.LoginException;
+import org.trustedanalytics.cfbroker.store.api.BrokerStore;
+import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceServiceStore;
+import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
+import org.trustedanalytics.servicebroker.zk.config.catalog.BrokerPlans;
+import org.trustedanalytics.servicebroker.zk.service.ZKServiceInstanceService;
 
 @Configuration
 public class ServiceInstanceServiceConfig {
 
-    @Autowired
-    @Qualifier(value = Qualifiers.BROKER_INSTANCE)
-    private ZookeeperClient zkClient;
+  @Autowired
+  private BrokerPlans brokerPlans;
 
-    @Autowired
-    @Qualifier(value = Qualifiers.SERVICE_INSTANCE)
-    private BrokerStore<ServiceInstance> store;
+  @Autowired
+  @Qualifier(value = Qualifiers.BROKER_INSTANCE)
+  private ZookeeperClient zkClient;
 
-    @Bean
-    public ServiceInstanceService getServiceInstanceService() throws IllegalArgumentException,
-            IOException, LoginException {
-        return new ZKServiceInstanceService(new ServiceInstanceServiceStore(store), zkClient);
-    }
+  @Autowired
+  @Qualifier(value = Qualifiers.SERVICE_INSTANCE)
+  private BrokerStore<ServiceInstance> store;
+
+  @Bean
+  public ServiceInstanceService getServiceInstanceService() throws IllegalArgumentException,
+      IOException, LoginException {
+    return new ZKServiceInstanceService(new ServiceInstanceServiceStore(store), brokerPlans, zkClient);
+  }
 }

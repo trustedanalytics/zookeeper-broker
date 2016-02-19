@@ -28,6 +28,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.trustedanalytics.servicebroker.zk.config.catalog.BrokerPlans;
 
 import java.util.Collections;
 
@@ -48,11 +49,14 @@ public class ZKServiceInstanceServiceTest {
   private ServiceInstanceService instanceService;
 
   @Mock
+  private BrokerPlans brokerPlans;
+
+  @Mock
   private ZookeeperClient zkClient;
 
   @Before
   public void before() {
-    service = new ZKServiceInstanceService(instanceService, zkClient);
+    service = new ZKServiceInstanceService(instanceService, brokerPlans, zkClient);
   }
 
   @Test

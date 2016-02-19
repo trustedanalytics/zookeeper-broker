@@ -61,5 +61,4 @@ public class ZKServiceInstanceBindingService extends ForwardingServiceInstanceBi
     credentialsCopy.put("zk.cluster", conf.getZkClusterHosts());
     return credentialsCopy;
   }
-
 }

@@ -15,7 +15,11 @@
  */
 package org.trustedanalytics.servicebroker.zk.config;
 
-import com.google.common.collect.ImmutableMap;
+import java.io.IOException;
+import java.util.Map;
+
+import javax.security.auth.login.LoginException;
+
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceBindingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,41 +28,35 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.trustedanalytics.cfbroker.store.api.BrokerStore;
 import org.trustedanalytics.cfbroker.store.impl.ServiceInstanceBindingServiceStore;
-import org.trustedanalytics.servicebroker.zk.kerberos.KerberosProperties;
+import org.trustedanalytics.servicebroker.zk.config.kerberos.KerberosProperties;
 import org.trustedanalytics.servicebroker.zk.service.ZKServiceInstanceBindingService;
 
-import javax.security.auth.login.LoginException;
-import java.io.IOException;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 
 @Configuration
 public class ServiceInstanceBindingServiceConfig {
 
-    @Autowired
-    private ExternalConfiguration configuration;
+  @Autowired
+  private ExternalConfiguration configuration;
 
-    @Autowired
-    private KerberosProperties kerberosProperties;
+  @Autowired
+  private KerberosProperties kerberosProperties;
 
-    @Autowired
-    @Qualifier(value = Qualifiers.SERVICE_INSTANCE_BINDING)
-    private BrokerStore<CreateServiceInstanceBindingRequest> store;
+  @Autowired
+  @Qualifier(Qualifiers.SERVICE_INSTANCE_BINDING)
+  private BrokerStore<CreateServiceInstanceBindingRequest> store;
 
-    @Bean
-    public ServiceInstanceBindingService getServiceInstanceBindingService()
-        throws IllegalArgumentException, IOException, LoginException {
+  @Bean
+  public ServiceInstanceBindingService getServiceInstanceBindingService()
+      throws IllegalArgumentException, IOException, LoginException {
+    return new ZKServiceInstanceBindingService(new ServiceInstanceBindingServiceStore(store),
+        getCredentials(), configuration);
+  }
 
-        return new ZKServiceInstanceBindingService(
-            new ServiceInstanceBindingServiceStore(store), getCredentials(), configuration);
-    }
-
-    private Map<String, Object> getCredentials()
-        throws IOException {
-
-        return ImmutableMap.of(
-            "kerberos", ImmutableMap.of(
-                "kdc", kerberosProperties.getKdc(),
-                "krealm", kerberosProperties.getRealm())
-        );
-    }
+  private Map<String, Object> getCredentials() throws IOException {
+    return ImmutableMap.of(
+        "kerberos", ImmutableMap.of(
+            "kdc", kerberosProperties.getKdc(),
+            "krealm", kerberosProperties.getRealm()));
+  }
 }

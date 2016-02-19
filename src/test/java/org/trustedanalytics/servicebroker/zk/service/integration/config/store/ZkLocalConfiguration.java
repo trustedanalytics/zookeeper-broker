@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.service;
+package org.trustedanalytics.servicebroker.zk.service.integration.config.store;
 
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
@@ -31,8 +31,8 @@ import org.springframework.context.annotation.Profile;
 import java.io.IOException;
 
 @Configuration
-@Profile("test")
-public class ConfigurationTest {
+@Profile("integration-test")
+public class ZkLocalConfiguration {
 
   private final String USER = "cf";
 
@@ -59,6 +59,7 @@ public class ConfigurationTest {
   }
 
   @Bean(initMethod = "init", destroyMethod = "destroy")
+  @Profile("integration-test")
   @Qualifier(Qualifiers.BROKER_STORE)
   public ZookeeperClient getZkClientForBrokerStore(TestingServer zkServer) throws IOException {
     ZookeeperClient client =
@@ -70,6 +71,7 @@ public class ConfigurationTest {
   }
 
   @Bean(initMethod = "init", destroyMethod = "destroy")
+  @Profile("integration-test")
   @Qualifier(Qualifiers.BROKER_INSTANCE)
   public ZookeeperClient getZkClientForBrokerInstance(TestingServer zkServer) throws IOException {
     ZookeeperClient client =

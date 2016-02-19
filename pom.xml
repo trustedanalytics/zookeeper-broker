@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <artifactId>zookeeper-broker</artifactId>
 
-    <version>0.5.7</version>
+    <version>0.6.0</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
@@ -47,7 +48,7 @@
                 </configuration>
             </plugin>
             <plugin>
-            <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
                     <execution>
@@ -65,8 +66,8 @@
                     </arguments>
                 </configuration>
             </plugin>
-	    <plugin>
-            <groupId>com.mycila</groupId>
+            <plugin>
+                <groupId>com.mycila</groupId>
                 <artifactId>license-maven-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
@@ -119,7 +120,7 @@
         <dependency>
             <groupId>org.trustedanalytics</groupId>
             <artifactId>hadoop-utils</artifactId>
-            <version>0.4.6</version>
+            <version>0.5.7</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

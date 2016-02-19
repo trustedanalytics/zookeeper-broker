@@ -15,6 +15,9 @@
  */
 package org.trustedanalytics.servicebroker.zk.service;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.cloudfoundry.community.servicebroker.model.Plan;
+import org.cloudfoundry.community.servicebroker.model.ServiceDefinition;
 import org.trustedanalytics.cfbroker.store.impl.ForwardingServiceInstanceServiceStore;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
 
@@ -25,18 +28,23 @@ import org.cloudfoundry.community.servicebroker.model.ServiceInstance;
 import org.cloudfoundry.community.servicebroker.service.ServiceInstanceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.trustedanalytics.servicebroker.zk.config.catalog.BrokerPlans;
 
 import java.io.IOException;
 
 public class ZKServiceInstanceService extends ForwardingServiceInstanceServiceStore {
 
-  private ZookeeperClient zkClient;
+  private final BrokerPlans brokerPlans;
+
+  private final ZookeeperClient zkClient;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZKServiceInstanceService.class);
 
-  public ZKServiceInstanceService(ServiceInstanceService delegate, ZookeeperClient zkClient) {
+  public ZKServiceInstanceService(ServiceInstanceService delegate,
+      BrokerPlans brokerPlans, ZookeeperClient zkClient) {
     super(delegate);
     this.zkClient = zkClient;
+    this.brokerPlans = brokerPlans;
   }
 
   @Override
@@ -45,13 +53,16 @@ public class ZKServiceInstanceService extends ForwardingServiceInstanceServiceSt
     ServiceInstance serviceInstance = super.createServiceInstance(request);
 
     //provisioning (creating znode for service instance)
-    try {
-      byte[] content = new byte[]{};
-      LOGGER.info("Creating znode for service instance.");
-      zkClient.addZNode(request.getServiceInstanceId(), content);
-    } catch (IOException e) {
-      throw new ServiceBrokerException(e);
+    if(brokerPlans.getPlanProvisioning(request.getPlanId())) {
+      try {
+        byte[] content = new byte[]{};
+        LOGGER.info("Creating znode for service instance.");
+        zkClient.addZNode(request.getServiceInstanceId(), content);
+      } catch (IOException e) {
+        throw new ServiceBrokerException(e);
+      }
     }
     return serviceInstance;
   }
+
 }
