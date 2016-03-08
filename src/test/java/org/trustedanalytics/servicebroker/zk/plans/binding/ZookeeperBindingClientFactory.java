@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.config;
+package org.trustedanalytics.servicebroker.zk.plans.binding;
 
-public final class Profiles {
-  public static final String CLOUD = "cloud";
+import org.trustedanalytics.servicebroker.framework.Credentials;
+
+public final class ZookeeperBindingClientFactory {
+  public static ZookeeperSimpleBindingOperations create(Credentials credentials,
+      String userspacePathTemplate) {
+    return new ZookeeperBindingClient(credentials, userspacePathTemplate);
+  }
 }

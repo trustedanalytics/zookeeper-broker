@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.config.store;
+package org.trustedanalytics.servicebroker.zk.config;
 
 import java.io.IOException;
 
@@ -30,16 +30,13 @@ import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClientBuilder;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManager;
 import org.trustedanalytics.hadoop.kerberos.KrbLoginManagerFactory;
-import org.trustedanalytics.servicebroker.zk.config.ExternalConfiguration;
-import org.trustedanalytics.servicebroker.zk.config.Profiles;
-import org.trustedanalytics.servicebroker.zk.config.Qualifiers;
-import org.trustedanalytics.servicebroker.zk.config.kerberos.KerberosProperties;
+import org.trustedanalytics.servicebroker.framework.Profiles;
+import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 
-@Profile(Profiles.CLOUD)
 @Configuration
-public class ZookeeperConfig {
+public class ZookeeperConfiguration {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(ZookeeperConfig.class);
+  private final static Logger LOGGER = LoggerFactory.getLogger(ZookeeperConfiguration.class);
 
   @Autowired
   private ExternalConfiguration config;
@@ -50,32 +47,18 @@ public class ZookeeperConfig {
   @Bean(initMethod = "init", destroyMethod = "destroy")
   @Profile(Profiles.CLOUD)
   @Qualifier(Qualifiers.BROKER_INSTANCE)
-  public ZookeeperClient getZkClientForBrokerInstance(KerberosProperties kerberosProperties)
-      throws IOException, LoginException {
-    return getZKClient(config.getBrokerRootNode());
-  }
-
-  @Bean(initMethod = "init", destroyMethod = "destroy")
-  @Profile(Profiles.CLOUD)
-  @Qualifier(Qualifiers.BROKER_STORE)
-  public ZookeeperClient getZkClientForBrokerStore(KerberosProperties kerberosProperties)
-      throws IOException, LoginException {
-    return getZKClient(config.getBrokerStoreNode());
-  }
-
-  private ZookeeperClient getZKClient(String brokerNode) throws IOException, LoginException {
-    if (kerberosProperties.isValid()) {
+  public ZookeeperClient getZKClient() throws IOException, LoginException {
+    if (kerberosProperties.isKerberosEnabled()) {
       LOGGER.info("Found kerberos configuration - trying to authenticate");
       KrbLoginManager loginManager =
           KrbLoginManagerFactory.getInstance().getKrbLoginManagerInstance(
               kerberosProperties.getKdc(), kerberosProperties.getRealm());
-      loginManager.loginWithCredentials(kerberosProperties.getUser(), kerberosProperties
-          .getPassword().toCharArray());
+      loginManager.loginWithCredentials(config.getUser(), config.getPassword().toCharArray());
     } else {
       LOGGER.warn("kerberos configuration empty or invalid - will not try to authenticate.");
     }
 
-    return new ZookeeperClientBuilder(config.getZkClusterHosts(), kerberosProperties.getUser(),
-        kerberosProperties.getPassword(), brokerNode).build();
+    return new ZookeeperClientBuilder(config.getZkClusterHosts(), config.getUser(),
+        config.getBrokerRootNode(), config.getBrokerRootNode()).build();
   }
 }

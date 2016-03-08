@@ -1,14 +1,29 @@
+---
 security:
+#password cf client will use when interacting with broker
   user.password: fake
-broker.root:
-  node: /platform
 zk:
-  cluster:
+  broker.root: /userspace
 store:
-  path: ${broker.store.znode:/broker/zookeeper/metadata}
+  #optional parameter to configure zookeeper-store
+  path: ${broker.store.znode:/metadata}
+  cluster: ${zk.cluster.url:}
+  user: ${system.user:test}
+  password: ${system.user.password:test1}
 cf:
-  servicename: zookeeper
-  serviceid: zookeeper
-  baseId: ${BASE_GUID:}
-metadata:
-  imageUrl: ${IMAGE_URL:}
+  catalog:
+    serviceName: ${cf.catalog.servicename:zookeeper}
+    serviceId: ${cf.catalog.serviceid:zookeeper}
+    serviceDescription: ZOOKEEPER service for creating znodes on hadoop distributed coordination service
+    baseId: fakeBaseGuid
+    plans:
+      - id: bare-plan
+        name: bare
+        description: bare
+        free: true
+      - id: shared-plan
+        name: shared
+        description: shared
+        free: true
+    metadata:
+      imageUrl: ${IMAGE_URL:}

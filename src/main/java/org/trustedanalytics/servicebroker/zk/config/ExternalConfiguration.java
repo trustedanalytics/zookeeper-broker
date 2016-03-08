@@ -15,41 +15,29 @@
  */
 package org.trustedanalytics.servicebroker.zk.config;
 
+import javax.validation.constraints.NotNull;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-
-import javax.validation.constraints.NotNull;
 
 @Configuration
 public class ExternalConfiguration {
 
-  @Value("${metadata.imageUrl}")
-  @NotNull
-  private String imageUrl;
-
-  @Value("${zk.cluster}")
+  @Value("${store.cluster}")
   @NotNull
   private String zkClusterHosts;
 
-  @Value("${cf.serviceid}")
-  @NotNull
-  private String cfServiceId;
-
-  @Value("${cf.servicename}")
-  @NotNull
-  private String cfServiceName;
-
-  @Value("${store.path}")
-  @NotNull
-  private String brokerStoreNode;
-
-  @Value("${broker.root.node}")
+  @Value("${zk.broker.root}")
   @NotNull
   private String brokerRootNode;
 
-  @Value("${cf.baseId}")
+  @Value("${store.user}")
   @NotNull
-  private String cfBaseId;
+  private String user;
+
+  @Value("${store.password}")
+  @NotNull
+  private String password;
 
   public String getZkClusterHosts() {
     return zkClusterHosts;
@@ -57,30 +45,6 @@ public class ExternalConfiguration {
 
   public void setZkClusterHosts(String zkClusterHosts) {
     this.zkClusterHosts = zkClusterHosts;
-  }
-
-  public String getCfServiceId() {
-    return cfServiceId;
-  }
-
-  public void setCfServiceId(String cfServiceId) {
-    this.cfServiceId = cfServiceId;
-  }
-
-  public String getCfServiceName() {
-    return cfServiceName;
-  }
-
-  public void setCfServiceName(String cfServiceName) {
-    this.cfServiceName = cfServiceName;
-  }
-
-  public String getBrokerStoreNode() {
-    return brokerStoreNode;
-  }
-
-  public void setBrokerStoreNode(String brokerStoreNode) {
-    this.brokerStoreNode = brokerStoreNode;
   }
 
   public String getBrokerRootNode() {
@@ -91,31 +55,19 @@ public class ExternalConfiguration {
     this.brokerRootNode = brokerRootNode;
   }
 
-  public String getImageUrl() {
-    return imageUrl;
+  public String getUser() {
+    return user;
   }
 
-  public void setImageUrl(String imageUrl) {
-    this.imageUrl = imageUrl;
+  public void setUser(String user) {
+    this.user = user;
   }
 
-  public String getCfBaseId() {
-    return cfBaseId;
+  public String getPassword() {
+    return password;
   }
 
-  public void setCfBaseId(String cfBaseId) {
-    this.cfBaseId = cfBaseId;
+  public void setPassword(String password) {
+    this.password = password;
   }
-
-  @Override
-  public String toString() {
-    return "ExternalConfiguration{" +
-           "zkClusterHosts='" + zkClusterHosts + '\'' +
-           ", cfServiceId='" + cfServiceId + '\'' +
-           ", cfServiceName='" + cfServiceName + '\'' +
-           ", brokerStoreNode='" + brokerStoreNode + '\'' +
-           ", brokerRootNode='" + brokerRootNode + '\'' +
-           '}';
-  }
-
 }

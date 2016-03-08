@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.service.integration;
+package org.trustedanalytics.servicebroker.zk.integration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.trustedanalytics.servicebroker.test.cloudfoundry.CfModelsFactory.getCreateBindingRequest;
+import static org.trustedanalytics.servicebroker.test.cloudfoundry.CfModelsFactory.getCreateInstanceRequest;
+import static org.trustedanalytics.servicebroker.test.cloudfoundry.CfModelsFactory.getServiceInstance;
 
 import org.apache.curator.test.TestingServer;
 import org.cloudfoundry.community.servicebroker.model.CreateServiceInstanceBindingRequest;
@@ -33,10 +36,12 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.trustedanalytics.servicebroker.zk.config.Application;
+import org.trustedanalytics.servicebroker.zk.Application;
 import org.trustedanalytics.servicebroker.zk.config.ExternalConfiguration;
-import org.trustedanalytics.servicebroker.zk.service.integration.config.kerberos.KerberosLocalConfiguration;
-import org.trustedanalytics.servicebroker.zk.service.integration.config.store.ZkLocalConfiguration;
+import org.trustedanalytics.servicebroker.zk.integration.config.KerberosLocalConfiguration;
+import org.trustedanalytics.servicebroker.zk.integration.config.ZkLocalConfiguration;
+
+import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {Application.class, ZkLocalConfiguration.class,
@@ -61,35 +66,35 @@ public class ZookeeperBrokerIntegrationTest {
   @Test
   public void testCreateServiceInstance_success_shouldStoreInstanceDataInBrokerStore()
       throws Exception {
-    CreateServiceInstanceRequest request = getCreateInstanceRequest("zk_instance");
+    //arrange
+    String serviceInstanceId = UUID.randomUUID().toString();
+    ServiceInstance instance = getServiceInstance(serviceInstanceId, "fakeBaseGuid-shared-plan");
+    CreateServiceInstanceRequest request = getCreateInstanceRequest(instance);
 
+    //act
     serviceBean.createServiceInstance(request);
+    ServiceInstance serviceInstance = serviceBean.getServiceInstance(serviceInstanceId);
 
-    ServiceInstance serviceInstance = serviceBean.getServiceInstance("zk_instance");
+    //assert
     assertThat(serviceInstance.getServiceInstanceId(), equalTo(request.getServiceInstanceId()));
   }
 
   @Test
   public void testCreateInstanceBinding_success_shouldReturnZookeeperNodeInCredentials()
       throws Exception {
-    CreateServiceInstanceBindingRequest request =
-        new CreateServiceInstanceBindingRequest(getServiceInstance("serviceId")
-            .getServiceDefinitionId(), "-shared-plan", "appGuid").withBindingId("bindingId")
-            .withServiceInstanceId("serviceId");
+    //arrange
+    String bindingId = UUID.randomUUID().toString();
+    String serviceInstanceId = UUID.randomUUID().toString();
+    ServiceInstance instance = getServiceInstance(serviceInstanceId, "fakeBaseGuid-shared-plan");
+    CreateServiceInstanceRequest instanceReq = getCreateInstanceRequest(instance);
+    CreateServiceInstanceBindingRequest bindReq = getCreateBindingRequest(serviceInstanceId).withBindingId(bindingId);
 
-    ServiceInstanceBinding binding = bindingBean.createServiceInstanceBinding(request);
-
+    //act
+    serviceBean.createServiceInstance(getCreateInstanceRequest(instance));
+    ServiceInstanceBinding binding = bindingBean.createServiceInstanceBinding(bindReq);
     String namespaceInCredentials = (String) binding.getCredentials().get("zk.node");
-    assertThat(namespaceInCredentials, equalTo(conf.getBrokerRootNode() + "/serviceId"));
-  }
 
-  private ServiceInstance getServiceInstance(String id) {
-    return new ServiceInstance(new CreateServiceInstanceRequest(id, "-shared-plan", "organizationGuid",
-        "spaceGuid"));
-  }
-
-  private CreateServiceInstanceRequest getCreateInstanceRequest(String serviceId) {
-    return new CreateServiceInstanceRequest("serviceDefinitionId", "-shared-plan", "organizationGuid",
-        "spaceGuid").withServiceInstanceId(serviceId);
+    //assert
+    assertThat(namespaceInCredentials, equalTo(conf.getBrokerRootNode() + "/" + serviceInstanceId));
   }
 }

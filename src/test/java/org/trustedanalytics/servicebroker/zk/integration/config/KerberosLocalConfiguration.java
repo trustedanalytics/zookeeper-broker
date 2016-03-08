@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.config;
+package org.trustedanalytics.servicebroker.zk.integration.config;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
+import java.io.IOException;
 
-@EnableAutoConfiguration
-@ComponentScan
-public class Application {
-  public static void main(String[] args) {
-    SpringApplication.run(Application.class, args);
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
+
+@Configuration
+public class KerberosLocalConfiguration {
+
+  @Bean
+  @Profile("integration-test")
+  public KerberosProperties getKerberosProperties() throws IOException {
+    return new KerberosProperties("kdc", "realm", "test", false);
   }
 }

@@ -13,21 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.trustedanalytics.servicebroker.zk.service.integration.config.kerberos;
+package org.trustedanalytics.servicebroker.zk.plans.binding;
 
-import java.io.IOException;
+import java.util.Map;
+import java.util.UUID;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.trustedanalytics.servicebroker.zk.config.kerberos.KerberosProperties;
-
-@Configuration
-public class KerberosLocalConfiguration {
-
-  @Bean
-  @Profile("integration-test")
-  public KerberosProperties getKerberosProperties() throws IOException {
-    return new KerberosProperties("kdc", "realm", "test", "test");
-  }
+public interface ZookeeperSimpleBindingOperations {
+  Map<String, Object> createCredentialsMap(UUID instanceId);
+  Map<String, Object> getBareCredentialsMap();
 }
