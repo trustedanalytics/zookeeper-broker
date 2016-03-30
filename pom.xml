@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>zookeeper-broker</artifactId>
 
-    <version>0.7.1</version>
+    <version>0.7.2</version>
 
     <parent>
         <groupId>org.trustedanalytics</groupId>
@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.trustedanalytics</groupId>
             <artifactId>broker-lib</artifactId>
-            <version>0.4.0</version>
+            <version>0.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.trustedanalytics</groupId>
