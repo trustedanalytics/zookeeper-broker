@@ -17,14 +17,13 @@ package org.trustedanalytics.servicebroker.zk.config;
 
 import java.io.IOException;
 
-import org.apache.directory.shared.kerberos.messages.KrbError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.trustedanalytics.servicebroker.framework.Credentials;
+import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 
 import com.google.common.collect.ImmutableMap;
-import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 
 @Configuration
 public class ServiceInstanceBindingConfig {

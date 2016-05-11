@@ -26,11 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.trustedanalytics.cfbroker.store.zookeeper.service.ZookeeperClient;
-import org.trustedanalytics.servicebroker.framework.Credentials;
 import org.trustedanalytics.servicebroker.framework.service.ServicePlanDefinition;
 import org.trustedanalytics.servicebroker.zk.config.Qualifiers;
-
-import com.google.common.collect.ImmutableMap;
 import org.trustedanalytics.servicebroker.zk.plans.binding.ZookeeperSimpleBindingOperations;
 
 @Component("shared")

@@ -36,7 +36,7 @@ import org.trustedanalytics.servicebroker.framework.kerberos.KerberosProperties;
 @Configuration
 public class ZookeeperConfiguration {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(ZookeeperConfiguration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperConfiguration.class);
 
   @Autowired
   private ExternalConfiguration config;

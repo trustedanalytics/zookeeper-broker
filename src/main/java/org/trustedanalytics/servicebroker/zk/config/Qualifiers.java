@@ -17,4 +17,6 @@ package org.trustedanalytics.servicebroker.zk.config;
 
 public final class Qualifiers {
   public static final String BROKER_INSTANCE = "brokerInstance";
+
+  private Qualifiers() {}
 }
