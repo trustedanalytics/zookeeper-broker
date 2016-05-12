@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/trustedanalytics/zookeeper-broker.svg?branch=master)](https://travis-ci.org/trustedanalytics/zookeeper-broker)
 [![Dependency Status](https://www.versioneye.com/user/projects/5729c305a0ca35004baf7db5/badge.svg?style=flat)](https://www.versioneye.com/user/projects/5729c305a0ca35004baf7db5)
 
 zookeeper-broker
